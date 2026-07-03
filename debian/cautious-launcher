@@ -2,15 +2,17 @@
 # For use with .desktop files and MIME handlers so that the Ubuntu Policy
 # can be followed: programs cannot be executed when they lack the execute bit.
 # https://wiki.ubuntu.com/SecurityTeam/Policies#Execute-Permission%20Bit%20Required
+#
+# This was updated to fix CVE-2026-10037 and prevent application confinement escape
 exe="$1"
 shift || true
-if [ -n "$exe" ] && [ ! -x "$exe" ] && \
+if [ -n "$exe" ] && \
    [ "${exe:0:5}" != "/usr/" ] && [ "${exe:0:5}" != "/opt/" ]
 then
     if [ -n "$DISPLAY" ] && [ -x /usr/bin/zenity ]; then
-        /usr/bin/zenity --error --title "Blocked: $*" --text "The file '$exe' is not marked as executable.  If this was downloaded or copied from an untrusted source, it may be dangerous to run.  For more details, read about the <a href=\"https://wiki.ubuntu.com/Security/ExecutableBit\">executable bit</a>."
+        /usr/bin/zenity --error --title "Blocked: $*" --text "For security reasons, running the file '$exe' has been blocked."
     else
-        echo "$*: '$exe' is not executable.  Aborting." >&2
+        echo "$*: '$exe' has been blocked for security reasons.  Aborting." >&2
     fi
     exit 1
 fi
